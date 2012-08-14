@@ -20,7 +20,7 @@ end if order.try(:line_items)
 
 unless bundle_variant_list.blank?
 %>
-<%= form_for :order, :url => bundle_populate_orders_path do |f| %>
+<%= form_for :order, :url => bundle_populate_orders_url do |f| %>
 <table>
   <thead>
     <tr data-hook="cart_items_headers">
@@ -31,30 +31,32 @@ unless bundle_variant_list.blank?
   </thead>
   <tbody id="line_items" data-hook>
   	<% bundle_variant_list.each do |variant| %>
+	<% if variant.is_master %>
 	<tr class="<%= cycle('', 'alt') %>">
 	  <td data-hook="cart_item_image">
 	    <% if variant.images.length == 0 %>
-	      <%= link_to small_image(variant.product), variant.product if variant.product.images.count > 0 %>
+	      <%= link_to medium_image(variant.product), variant.product if variant.product.images.count > 0 %>
 	    <% else %>
-	      <%= link_to image_tag(variant.images.first.attachment.url(:small)), variant.product %>
+	      <%= link_to image_tag(variant.images.first.attachment.url(:medium)), variant.product %>
 	    <% end %>
 	  </td>
 	  <td data-hook="cart_item_description">
 	   <h4><%= link_to variant.product.name, product_path(variant.product) %></h4>
-	    <%== variant.product.description %>
+	    <%= truncate(variant.product.description.gsub(/<(.*?)>/,""), :length => 240, :omission => "...") %>
 	  </td>
 	  <td data-hook="cart_item_price">
 	    <%= number_to_currency variant.price %>
 	  </td>
 	  <td data-hook="cart_item_quantity">
 	    <%= number_field_tag "variants[#{variant.id}]", relevant_line_items[variant.id].try(:quantity) || 0 , :class => "", :size => 5, :min => 0 %>
+	    <%= button_tag t(:update_cart), :class => 'btn btn-large', :id => 'update-button', :name => 'update' %>
 	  </td>
 	</tr>
+	<% end %>
  	<% end %>
   </tbody>
 </table>
 <div class="cart-buttons">
-  <%= button_tag t(:update_cart), :class => 'btn btn-large', :id => 'update-button', :name => 'update' %>
   <%= button_tag t(:checkout_now), :class => 'btn btn-large btn-success', :id => 'checkout-button', :name => 'checkout' %>
 </div>
 <% end %>

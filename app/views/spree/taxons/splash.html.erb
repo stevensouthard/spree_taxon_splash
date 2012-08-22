@@ -1,10 +1,10 @@
+<a name="bundle_list"></a>
 <% @body_id = 'taxon-splash' %>
 <% if @taxon.taxon_splash.content.blank? %>
 <%# throw content in here for development %>
 <% else %>
 <%== @taxon.taxon_splash.content %>
 <% end %>
-<a name="bundle_list"></a>
 <% if @taxon.taxon_splash.is_leaf?%>
 <div id="bundle_list" class="row">
 <%
